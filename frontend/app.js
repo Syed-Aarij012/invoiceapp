@@ -1,4 +1,4 @@
-const API = 'http://localhost:3001/api/invoices';
+const API = '/api/invoices';
 
 let invoices = [];
 let currentFilter = [];
