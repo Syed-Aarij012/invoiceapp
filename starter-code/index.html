@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <img src="assets/logo.svg" alt="logo">
+    </div>
+    <div class="sidebar-bottom">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <img id="theme-icon" src="assets/icon-moon.svg" alt="theme">
+      </button>
+      <div class="avatar">
+        <img src="assets/image-avatar.jpg" alt="avatar">
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- List View -->
+    <div id="view-list">
+      <div class="list-header">
+        <div>
+          <h1>Invoices</h1>
+          <p id="invoice-count">There are 7 total invoices</p>
+        </div>
+        <div class="list-header-actions">
+          <div class="filter-dropdown">
+            <button class="filter-toggle" onclick="toggleFilterMenu()">
+              Filter by status <img src="assets/icon-arrow-down.svg" alt="">
+            </button>
+            <div class="filter-menu hidden" id="filter-menu">
+              <label><input type="checkbox" value="draft" onchange="handleFilter()"> Draft</label>
+              <label><input type="checkbox" value="pending" onchange="handleFilter()"> Pending</label>
+              <label><input type="checkbox" value="paid" onchange="handleFilter()"> Paid</label>
+            </div>
+          </div>
+          <button class="btn-new" onclick="openForm()">
+            <span class="btn-new-icon"><img src="assets/icon-plus.svg" alt=""></span>
+            New Invoice
+          </button>
+        </div>
+      </div>
+
+      <div id="invoice-list"></div>
+    </div>
+
+    <!-- Detail View -->
+    <div id="view-detail" class="hidden">
+      <button class="back-btn" onclick="showList()">
+        <img src="assets/icon-arrow-left.svg" alt=""> Go back
+      </button>
+      <div class="detail-status-bar">
+        <span class="status-label">Status</span>
+        <span id="detail-status-badge" class="status"></span>
+        <div class="detail-actions">
+          <button class="btn-edit" onclick="openEditForm()">Edit</button>
+          <button class="btn-delete-detail" onclick="deleteCurrentInvoice()">Delete</button>
+          <button class="btn-mark-paid" id="btn-mark-paid" onclick="markCurrentPaid()">Mark as Paid</button>
+        </div>
+      </div>
+      <div class="detail-card" id="detail-card"></div>
+    </div>
+
+  </main>
+
+  <!-- Form Panel (slide-in) -->
+  <div id="form-overlay" class="hidden">
+    <div class="form-panel" id="form-panel">
+      <h2 id="form-title">New Invoice</h2>
+
+      <div class="form-scroll">
+        <p class="form-section-title">Bill From</p>
+        <div class="form-group">
+          <label>Street Address</label>
+          <input type="text" id="f-from-street">
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="f-from-city">
+          </div>
+          <div class="form-group">
+            <label>Post Code</label>
+            <input type="text" id="f-from-post">
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" id="f-from-country">
+          </div>
+        </div>
+
+        <p class="form-section-title">Bill To</p>
+        <div class="form-group">
+          <label>Client's Name</label>
+          <input type="text" id="f-client-name">
+        </div>
+        <div class="form-group">
+          <label>Client's Email</label>
+          <input type="email" id="f-client-email" placeholder="e.g. email@example.com">
+        </div>
+        <div class="form-group">
+          <label>Street Address</label>
+          <input type="text" id="f-to-street">
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="f-to-city">
+          </div>
+          <div class="form-group">
+            <label>Post Code</label>
+            <input type="text" id="f-to-post">
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" id="f-to-country">
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Invoice Date</label>
+            <input type="date" id="f-date">
+          </div>
+          <div class="form-group">
+            <label>Payment Terms</label>
+            <select id="f-terms">
+              <option value="1">Net 1 Day</option>
+              <option value="7">Net 7 Days</option>
+              <option value="14">Net 14 Days</option>
+              <option value="30">Net 30 Days</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Project Description</label>
+          <input type="text" id="f-desc" placeholder="e.g. Graphic Design Service">
+        </div>
+
+        <p class="form-section-title">Item List</p>
+        <div id="item-list-header" class="item-list-header">
+          <span>Item Name</span><span>Qty.</span><span>Price</span><span>Total</span><span></span>
+        </div>
+        <div id="item-list"></div>
+        <button class="btn-add-item" onclick="addItem()">+ Add New Item</button>
+
+        <p id="form-error" class="error hidden">— All fields must be filled in</p>
+      </div>
+
+      <div class="form-footer" id="form-footer"></div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="delete-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Confirm Deletion</h3>
+      <p id="delete-modal-text"></p>
+      <div class="modal-actions">
+        <button onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-delete-confirm" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
